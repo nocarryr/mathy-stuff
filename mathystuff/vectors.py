@@ -14,6 +14,18 @@ def magnitude_from_points(init_x, init_y, terminal_x, terminal_y):
     dt_y = terminal_y - init_y
     return magnitude_from_delta(dt_x, dt_y)
 
+def angle_from_xy(x, y):
+    deg = math.degrees(math.atan(y / x))
+    if x > 0 and y > 0:
+        return deg
+    elif y > 0:
+        deg += 180
+    elif x > 0:
+        deg += 360
+    else:
+        deg += 180
+    return deg
+
 class Point(object):
     def __init__(self, x, y):
         self.x = x
@@ -76,6 +88,11 @@ class Vector(object):
         dt = self.terminal - self.initial
         dt **= 2
         return math.sqrt(dt.x + dt.y)
+    @property
+    def angle(self):
+        terminal = self.terminal.copy()
+        terminal -= self.initial
+        return angle_from_xy(terminal.x, terminal.y)
     def copy(self):
         return Vector(initial=self.initial.copy(), terminal=self.terminal.copy())
     def __mul__(self, other):
@@ -107,6 +124,9 @@ class Vector(object):
         print(mag, other.magnitude)
         assert other.magnitude == mag
         return Vector(initial=self.initial.copy(), terminal=other.terminal)
+    def __str__(self):
+        return '({t.x}, {t.y}) {a:06.2f} deg'.format(
+            t=self.terminal, a=self.angle)
 
 axes = None
 def color_iter():
