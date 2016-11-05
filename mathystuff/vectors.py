@@ -141,7 +141,7 @@ def color_iter():
         yield c
 color = color_iter()
 
-def plot_vector(v=None, **kwargs):
+def plot_vector(v=None, name='', **kwargs):
     global axes
     if axes is None:
         axes = plt.axes()
@@ -152,22 +152,25 @@ def plot_vector(v=None, **kwargs):
     return axes.arrow(
         v.initial.x, v.initial.y,
         v.terminal.x, v.terminal.y,
-        head_width=.05, fc=c, ec=c,
+        head_width=.5, fc=c, ec=c,
+        length_includes_head=True, label='{}: {}'.format(name, str(v)),
     )
 
 def main():
     plt.xlim(-10, 10)
     plt.ylim(-10, 10)
+    handles = []
     u = Vector(terminal=[1, -5])
-    plot_vector(u)
+    handles.append(plot_vector(u, 'u'))
     w = Vector(terminal=[8, 4])
-    plot_vector(w)
+    handles.append(plot_vector(w, 'w'))
     uw = u + w
-    plot_vector(uw)
+    handles.append(plot_vector(uw, 'uw'))
     v = Vector(initial=[-1, -8], terminal=w.terminal.copy())
-    plot_vector(v)
+    handles.append(plot_vector(v, 'v'))
     uv = u + v
-    plot_vector(uv)
+    handles.append(plot_vector(uv, 'uv'))
+    legend = plt.legend(handles=handles, loc='upper left')
     plt.show()
 
 if __name__ == '__main__':
