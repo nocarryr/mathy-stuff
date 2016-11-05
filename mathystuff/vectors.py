@@ -125,7 +125,7 @@ class Vector(object):
         assert other.magnitude == mag
         return Vector(initial=self.initial.copy(), terminal=other.terminal)
     def __str__(self):
-        return '({t.x}, {t.y}) {a:06.2f} deg'.format(
+        return '({t.x: 5.2f}, {t.y: 5.2f}) {a: 6.2f} deg'.format(
             t=self.terminal, a=self.angle)
 
 axes = None
@@ -161,16 +161,17 @@ def main():
     plt.ylim(-10, 10)
     handles = []
     u = Vector(terminal=[1, -5])
-    handles.append(plot_vector(u, 'u'))
+    handles.append(plot_vector(u, ' u'))
     w = Vector(terminal=[8, 4])
-    handles.append(plot_vector(w, 'w'))
+    handles.append(plot_vector(w, ' w'))
     uw = u + w
     handles.append(plot_vector(uw, 'uw'))
     v = Vector(initial=[-1, -8], terminal=w.terminal.copy())
-    handles.append(plot_vector(v, 'v'))
+    handles.append(plot_vector(v, ' v'))
     uv = u + v
     handles.append(plot_vector(uv, 'uv'))
-    legend = plt.legend(handles=handles, loc='upper left')
+    legend = plt.legend(handles=handles, loc='upper left',
+        prop={'family':'monospace', 'size':'small'})
     plt.show()
 
 if __name__ == '__main__':
