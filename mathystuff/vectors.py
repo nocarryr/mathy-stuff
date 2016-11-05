@@ -26,6 +26,12 @@ def angle_from_xy(x, y):
         deg += 180
     return deg
 
+def xy_from_magnitude_angle(magnitude, angle):
+    rad = math.radians(angle)
+    x = magnitude * math.cos(rad)
+    y = magnitude * math.sin(rad)
+    return x, y
+
 class Point(object):
     def __init__(self, x, y):
         self.x = x
@@ -75,6 +81,8 @@ class Point(object):
         return '({self.x}, {self.y})'.format(self=self)
 
 class Vector(object):
+    _magnitude = None
+    _angle = None
     def __init__(self, **kwargs):
         self.initial = kwargs.get('initial', (0, 0))
         if not isinstance(self.initial, Point):
@@ -83,16 +91,35 @@ class Vector(object):
         if self.terminal is not None:
             if not isinstance(self.terminal, Point):
                 self.terminal = Point(*self.terminal)
+        else:
+            self.angle = kwargs.get('angle')
+            self.magnitude = kwargs.get('magnitude')
     @property
     def magnitude(self):
+        if self.terminal is None and self._angle is None:
+            return None
         dt = self.terminal - self.initial
         dt **= 2
         return math.sqrt(dt.x + dt.y)
+    @magnitude.setter
+    def magnitude(self, value):
+        self._magnitude = value
+        if self._angle is not None:
+            x, y = xy_from_magnitude_angle(self._magnitude, self._angle)
+            self.terminal = self.initial + Point(x, y)
     @property
     def angle(self):
+        if self.terminal is None and self._magnitude is None:
+            return None
         terminal = self.terminal.copy()
         terminal -= self.initial
         return angle_from_xy(terminal.x, terminal.y)
+    @angle.setter
+    def angle(self, value):
+        self._angle = value
+        if self._magnitude is not None:
+            x, y = xy_from_magnitude_angle(self._magnitude, self._angle)
+            self.terminal = self.initial + Point(x, y)
     def copy(self):
         return Vector(initial=self.initial.copy(), terminal=self.terminal.copy())
     def __mul__(self, other):
@@ -170,6 +197,8 @@ def main():
     handles.append(plot_vector(v, ' v'))
     uv = u + v
     handles.append(plot_vector(uv, 'uv'))
+    y = Vector(magnitude=10, angle=225)
+    handles.append(plot_vector(y, ' y'))
     legend = plt.legend(handles=handles, loc='upper left',
         prop={'family':'monospace', 'size':'small'})
     plt.show()
